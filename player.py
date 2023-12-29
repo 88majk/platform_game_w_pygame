@@ -18,6 +18,7 @@ class Player(pygame.sprite.Sprite):
         self.fall_count = 0
         self.jump_count = 0
         self.hit = False
+        self.score = 0
         self.life_points = 3
         self.hit_count = 0
     
