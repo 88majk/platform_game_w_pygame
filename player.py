@@ -61,7 +61,9 @@ class Player(pygame.sprite.Sprite):
         self.hit = True
         self.hit_count = 0
     
-    
+    def collect_straw(self):
+        self.score += 10
+
     def landed(self):
         self.fall_count = 0
         self.y_vel = 0

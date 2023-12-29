@@ -36,7 +36,7 @@ def handle_move(player, objects, superiors): # funkcja sterująca klawiszami
         if obj and obj.name == "fire":
             player.make_hit()
         if obj and obj.name == "Strawberry":
-            player.make_hit()
+            player.collect_straw()
             if obj in superiors:
                 superiors.remove(obj)
            
@@ -115,6 +115,7 @@ def main(window):
             strawberry.loop()
             handle_move(player, objects, superiors)
             draw(window, background, bg_image, player, objects, superiors, offset_x)
+            draw_text(window, str(player.score), font, TEXT_COL, 10, 30)
 
             if((player.rect.right - offset_x >= WIDTH - scroll_area_width) and player.x_vel > 0) or (
                 (player.rect.left - offset_x <= scroll_area_width) and player.x_vel < 0):
