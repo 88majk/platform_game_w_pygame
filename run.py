@@ -37,8 +37,10 @@ def handle_move(player, objects, superiors): # funkcja sterująca klawiszami
             player.make_hit()
         if obj and obj.name == "Strawberry":
             player.collect_straw()
+            obj.collected()
             if obj in superiors:
-                superiors.remove(obj)
+                pass
+                # superiors.remove(obj)
            
 
 
@@ -54,7 +56,7 @@ def main(window):
     fire.on()
 
     strawberry = Strawberry(200, HEIGHT - 3*block_size, 32, 32)
-    superiors = [Strawberry(i*block_size, HEIGHT - 3*block_size, 32, 32) for i in range (1, 10)]
+    superiors = [Strawberry(i*block_size, HEIGHT - 3*block_size, 32, 32) for i in range (1, 12)]
     
     player = Player(100, 100, 50, 50)
     objects = [*floor, Block(0, HEIGHT - block_size * 2, block_size), Block(block_size * 3, HEIGHT - block_size * 4, block_size), fire]
@@ -112,10 +114,12 @@ def main(window):
 
             player.loop(FPS)
             fire.loop()
-            strawberry.loop()
+            for strawberry in superiors:
+                strawberry.loop()
+
             handle_move(player, objects, superiors)
             draw(window, background, bg_image, player, objects, superiors, offset_x)
-            draw_text(window, str(player.score), font, TEXT_COL, 10, 30)
+            draw_text(window, str(player.score), font_score, SCORE_COL, 10, 10)
 
             if((player.rect.right - offset_x >= WIDTH - scroll_area_width) and player.x_vel > 0) or (
                 (player.rect.left - offset_x <= scroll_area_width) and player.x_vel < 0):

@@ -11,6 +11,9 @@ class Strawberry(Object):
         self.image = self.strawberry["Strawberry"][0]
         self.mask = pygame.mask.from_surface(self.image)
         self.animation_count = 0
+        self.collection_pic = load_sprite_sheets("Items", "Fruits", width, height)
+        self.image_col = self.collection_pic["Collected"][0]
+        self.mask_col = pygame.mask.from_surface(self.image_col)
     
     def loop(self):
         sprites = self.strawberry["Strawberry"]
@@ -23,3 +26,14 @@ class Strawberry(Object):
 
         if self.animation_count // self.ANIMATION_DELAY > len(sprites):
             self.amimation_count = 0
+    
+    def collected(self):
+        sprites = self.collection_pic["Collected"]
+        sprite_index = (self.animation_count // self.ANIMATION_DELAY) % len(sprites)
+        self.collect_img = sprites[sprite_index]
+        self.animation_count += 1
+
+        self.rect = self.image_col.get_rect(topleft=(self.rect.x, self.rect.y))
+        self.mask_col = pygame.mask.from_surface(self.collect_img)
+
+        

@@ -7,8 +7,8 @@ title_font = pygame.font.SysFont("04b 30", 70)
 TEXT_COL = (255, 255, 255)
 TITLE_COL = (16, 112, 37)
 
-font = pygame.font.SysFont("Consolas", 30)
-TEXT_COL = (255, 255, 255)
+font_score = pygame.font.SysFont("04b 30", 45)
+SCORE_COL = (158, 13, 20)
 
 play_img = pygame.image.load("assets/Menu/Buttons/play.png").convert_alpha()
 play_button = Button(130, 250, play_img, 1)
