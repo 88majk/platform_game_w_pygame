@@ -4,6 +4,8 @@ from object import Object
 
 class Strawberry(Object):
     ANIMATION_DELAY = 3
+    all_strawberries = pygame.sprite.Group()
+
 
     def __init__(self, x, y, width, height):
         super().__init__(x, y, width, height, "Strawberry")
@@ -11,29 +13,33 @@ class Strawberry(Object):
         self.image = self.strawberry["Strawberry"][0]
         self.mask = pygame.mask.from_surface(self.image)
         self.animation_count = 0
+        self.collect_animation_count = 0
         self.collection_pic = load_sprite_sheets("Items", "Fruits", width, height)
         self.image_col = self.collection_pic["Collected"][0]
-        self.mask_col = pygame.mask.from_surface(self.image_col)
+        self.collected = False
+        Strawberry.all_strawberries.add(self)
+
     
     def loop(self):
         sprites = self.strawberry["Strawberry"]
         sprite_index = (self.animation_count // self.ANIMATION_DELAY) % len(sprites)
-        self.image = sprites[sprite_index]
-        self.animation_count += 1
+
+        if self.collected:
+            self.collected = True
+            self.image = self.get_collect_animation_frame()
+            self.collect_animation_count += 1
+            
+            if self.collect_animation_count > 12:
+                self.collect_animation_count = 0
+                Strawberry.all_strawberries.remove(self)
+        else:
+            self.image = sprites[sprite_index]
+            self.animation_count += 1
 
         self.rect = self.image.get_rect(topleft=(self.rect.x, self.rect.y))
-        self.mask = pygame.mask.from_surface(self.image)
-
-        if self.animation_count // self.ANIMATION_DELAY > len(sprites):
-            self.amimation_count = 0
     
-    def collected(self):
-        sprites = self.collection_pic["Collected"]
-        sprite_index = (self.animation_count // self.ANIMATION_DELAY) % len(sprites)
-        self.collect_img = sprites[sprite_index]
-        self.animation_count += 1
+    def get_collect_animation_frame(self):
+        collect_sprites = self.collection_pic["Collected"]
+        frame_index = (self.collect_animation_count // 2) % len(collect_sprites)
+        return collect_sprites[frame_index]
 
-        self.rect = self.image_col.get_rect(topleft=(self.rect.x, self.rect.y))
-        self.mask_col = pygame.mask.from_surface(self.collect_img)
-
-        

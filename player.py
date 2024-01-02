@@ -21,6 +21,7 @@ class Player(pygame.sprite.Sprite):
         self.score = 0
         self.life_points = 3
         self.hit_count = 0
+        self.bug_protect = True
     
     def move(self, dx, dy):
         self.rect.x += dx
@@ -51,15 +52,18 @@ class Player(pygame.sprite.Sprite):
         self.fall_count += 1
         if self.hit:
             self.hit_count += 1
-        if self.hit_count > fps * 2:
+        if self.hit_count > fps:
             self.hit = False
             self.life_points -= 1
             self.hit_count = 0
+            self.bug_protect = True
         self.update_sprite()
 
     def make_hit(self):
-        self.hit = True
-        self.hit_count = 0
+        if self.bug_protect:
+            self.hit = True
+            self.hit_count = 0
+            self.bug_protect = False
     
     def collect_straw(self):
         self.score += 10
@@ -72,6 +76,10 @@ class Player(pygame.sprite.Sprite):
     def hit_head(self):
         self.count = 0
         self.y_vel *= -1
+
+    def win(self):
+        self.score = self.score + 100*self.life_points
+        
 
     def update_sprite(self):
         sprite_sheet = "idle"
