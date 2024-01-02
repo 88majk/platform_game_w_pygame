@@ -90,4 +90,8 @@ def draw_menu(window, background, bg_image, objects, offset_x, buttons):
     
     for button in buttons:
         button.draw(window, 0)
+
+def draw_buttons(window, buttons):
+    for button in buttons:
+        button.draw(window, 0)
         

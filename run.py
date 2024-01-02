@@ -10,13 +10,14 @@ from player import Player
 from block import Block
 from menu import *
 from levels.level1 import *
+from levels.level2 import *
 from picture import Picture
 
 FPS = 60
 PLAYER_VEL = 5
 level_win = [False]
 
-def handle_move(player, objects, superiors): # funkcja sterująca klawiszami
+def handle_move(player, objects, superiors): # FUNKCJA STEROWANIA
     keys = pygame.key.get_pressed()
     player.x_vel = 0
     collide_left = collide(player, objects, -PLAYER_VEL * 2)
@@ -30,6 +31,7 @@ def handle_move(player, objects, superiors): # funkcja sterująca klawiszami
     vertical_collide = handle_vertical_collsion(player, objects, player.y_vel)
     superiors_collected = collect_superiors(player, superiors)
     
+    # SPRAWDZANIE I OBSLUGA KOLIZJI POSTACI
     to_check = [*collide_left, *collide_right, *vertical_collide, *superiors_collected]
     for obj in to_check:
         if obj and obj.name == "fire":
@@ -54,26 +56,24 @@ def main(window):
     offset_x = 0
     scroll_area_width = 200
 
+    # LISTY POTRZEBNE DO RYSOWANIA ZESTAWOW PRZYCISKOW W ZALEZNOSCI OD STANU
     menu_buttons = [levels_button, settings_button, exit_button]
     levels_buttons = [level01_button, level02_button, level03_button]
-    menu_floor = [Block(i*block_size, HEIGHT - block_size, block_size) for i in range(-WIDTH // block_size, WIDTH * 2//block_size)]
+    pause_buttons = [exit_from_game_button]
 
-    play_state = False
-    menu_state = True
-    level_reset = True
-    run = True
+    # LISTA DO RYSOWANIA TLA MENU GLOWNEGO
+    menu_floor = [Block(i*block_size, HEIGHT - block_size, block_size, 0, 0) for i in range(-WIDTH // block_size, WIDTH * 2//block_size)]
+
+    ##### STANY #####
+    play_state = False # STAN GRY - WYSWIETLANIE MAPY ORAZ BOHATERA
+    levels_choice = False # WYBOR LEVELU - WYSWIETLANIE CZESCI MENU Z WYBOREM POZIOMU
+    menu_state = True # POCZATKOWY STAN WYSWIETLANIA MENU
+    pause_state = False # STAN WYSTEPUJACY W TRAKCIE STANU PLAY STATE - PAUZA W GRZE
+    run = True # OGOLNY STAN GLOWNEJ PETLI PROGRAMU
+
     while run:
-        if level_reset:
-            level = Level1()
-            level.reset_level()
-            level_reset = False
-            player = Player(100, 100, 50, 50)
-            player.score = 0
-            player.life_points = 3
-
         while menu_state:
-            clock.tick(FPS)
-            
+            clock.tick(FPS) 
             pygame.display.update()
 
             for event in pygame.event.get():
@@ -90,9 +90,6 @@ def main(window):
             if mark_button(exit_button):
                 menu_state = False
                 run = False
-            # if mark_button(play_button):
-            #     play_state = True
-            #     menu_state = False
             if mark_button(settings_button):
                 pass
             
@@ -105,7 +102,6 @@ def main(window):
 
         while levels_choice:
             clock.tick(FPS)
-            
             pygame.display.update()
 
             for event in pygame.event.get():
@@ -116,24 +112,70 @@ def main(window):
                     if event.key == pygame.K_ESCAPE:
                         menu_state = True
                         levels_choice = False
-
-            draw_menu(window, background, bg_image, menu_floor, 0, levels_button)
-            draw_text(window, "PJF Adventures", title_font, TITLE_COL, 50, 50)
-            draw_text(window, "Choose level", font, TEXT_COL, 180, 300)
             
+            if mark_button(level01_button):
+                level = Level1()
+                level_reset = True
+                play_state = True
+                levels_choice = False
+            if mark_button(level02_button):
+                level = Level2()
+                level_reset = True
+                play_state = True
+                levels_choice = False
 
+            draw_menu(window, background, bg_image, menu_floor, 0, levels_buttons)
+            draw_text(window, "PJF Adventures", title_font, TITLE_COL, 50, 50)
+            draw_text(window, "Choose level", font, TEXT_COL, 120, 250)
+            
+        if level_reset:
+            offset_x = 0
+            level.reset_level()
+            player = Player(100, 100, 50, 50)
+            player.score = 0
+            player.life_points = 3
+            level_reset = False
+        
         while play_state:
             clock.tick(FPS)
             pygame.display.update()
 
             # ODCZYT KLAWISZY
             for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                        play_state = False
+                        run = False
+                        break
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE and player.jump_count < 2:
                         player.jump()
                     if event.key == pygame.K_ESCAPE:
                         play_state = False
-                        menu_state = True
+                        pause_state = True
+
+            #### PAUZA W GRZE #####################################################
+            while pause_state:
+                clock.tick(FPS)
+                pygame.display.update()
+
+                for event in pygame.event.get():
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            play_state = True
+                            pause_state = False
+
+                if mark_button(exit_from_game_button):
+                    level_reset = True
+                    level.clear_map()
+                    pause_state = False
+                    play_state = False
+                    menu_state = True
+
+                draw_text(window, "Paused", font, TEXT_COL, 400, 200)
+                draw_text(window, "Exit to menu", smaller_font, TEXT_COL, 430, 250)
+                draw_buttons(window, pause_buttons) # 400, 250
+            ######################################################################
+
 
             # WŁĄCZANIE ANIMACJI
             player.loop(FPS)
@@ -161,23 +203,21 @@ def main(window):
                 
             # CZYSZCZENIE MAPY PO UTRACIE ŻYĆ
             if player.life_points == 0:
-                offset_x = 0
                 level.clear_map()
                 player.kill()
                 play_state = False
                 menu_state = True
                 level_reset = True
             
-            # WARUNEK SKONCZENIA POZIOMU (ZEBRANIA FLAGI FINAL )
+            # WARUNEK SKONCZENIA POZIOMU (ZEBRANIA FLAGI FINAL)
             if level_win[0]:
-                offset_x = 0
                 level_win[0] = False
                 level.clear_map()
                 player.kill()
                 play_state = False
                 menu_state = True
-                level_reset = True    
-
+                level_reset = True
+            
     pygame.quit()
     quit()
 

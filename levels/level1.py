@@ -13,7 +13,7 @@ class Level1():
     
     def reset_level(self):
         block_size = 96
-        self.floor = [Block(i*block_size, HEIGHT - block_size, block_size) for i in range(-WIDTH // block_size, WIDTH * 2//block_size)]
+        self.floor = [Block(i*block_size, HEIGHT - block_size, block_size, 96, 0) for i in range(-WIDTH // block_size, WIDTH * 2//block_size)]
         
         self.fire = [Fire(i*200, HEIGHT - block_size - 64, 16, 32) for i in range(1, 5)]
         self.final_flag = FinalFlag(1000, HEIGHT - block_size - 2*64, 64, 64)
@@ -22,7 +22,10 @@ class Level1():
         [Strawberry(i*50, HEIGHT - 5*block_size, 32, 32) for i in range (1,11)]
 
         self.superiors = Strawberry.all_strawberries  
-        self.objects = [*self.floor, Block(0, HEIGHT - block_size * 2, block_size), Block(block_size * 3, HEIGHT - block_size * 4, block_size), *self.fire, self.final_flag, *self.spikes]
+        self.objects = [*self.floor, 
+                        Block(0, HEIGHT - block_size * 2, block_size, 96, 0), 
+                        Block(block_size * 3, HEIGHT - block_size * 4, block_size, 96, 0), 
+                        *self.fire, self.final_flag, *self.spikes]
     
     def clear_map(self):
         self.objects = []
