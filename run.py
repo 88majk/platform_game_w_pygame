@@ -3,7 +3,7 @@ import pygame
 from graphic_setup import *
 from collisions import *
 from player import Player
-from block import Block
+from ground.block import Block
 from menu import *
 from levels.level1 import *
 from levels.level2 import *
@@ -14,18 +14,18 @@ FPS = 60
 PLAYER_VEL = 5
 level_win = [False]
 
-def handle_move(player, objects, superiors): # FUNKCJA STEROWANIA
+def handle_move(player, objects, interact_elements, superiors): # FUNKCJA STEROWANIA
     keys = pygame.key.get_pressed()
     player.x_vel = 0
-    collide_left = collide(player, objects, -PLAYER_VEL * 2)
-    collide_right = collide(player, objects, PLAYER_VEL * 2)
+    collide_left = collide(player, objects, interact_elements, -PLAYER_VEL * 2)
+    collide_right = collide(player, objects, interact_elements, PLAYER_VEL * 2)
 
     if keys[pygame.K_a] and not collide_left:
         player.move_left(PLAYER_VEL)
     if keys[pygame.K_d] and not collide_right:
         player.move_right(PLAYER_VEL)
 
-    vertical_collide = handle_vertical_collsion(player, objects, player.y_vel)
+    vertical_collide = handle_vertical_collsion(player, objects, interact_elements, player.y_vel)
     superiors_collected = collect_superiors(player, superiors)
     
     # SPRAWDZANIE I OBSLUGA KOLIZJI POSTACI
@@ -35,14 +35,15 @@ def handle_move(player, objects, superiors): # FUNKCJA STEROWANIA
             player.make_hit()
         if obj and obj.name == "spikes":
             player.make_hit()
+        if obj and obj.name == "falling_platforms":
+                obj.jumpedOn = True
         if obj and obj.name == "Strawberry" and not obj.collected:
             player.collect_straw()
             if obj in superiors:
                 obj.collected = True
         if obj and obj.name == "final_flag":
             level_win[0] = True
-            player.win()
-           
+            player.win()          
 
 
 def main(window):
@@ -255,10 +256,12 @@ def main(window):
             for strawberry in level.superiors:
                 strawberry.loop()
             level.final_flag.loop()
+            for platform in level.interact_elements:
+                platform.loop()
 
             # RYSOWANIE ELEMENTOW MAPY
-            handle_move(player, level.objects, level.superiors)
-            draw(window, background, bg_image, player, level.objects, level.superiors, offset_x)
+            handle_move(player, level.objects, level.interact_elements, level.superiors)
+            draw(window, background, bg_image, player, level.objects, level.superiors, level.interact_elements, offset_x)
             draw_text(window, str(player.score), font_score, SCORE_COL, 10, 10)
             
             # RYSOWANIE AKTUALNEJ LICZBY ZYC
@@ -271,8 +274,7 @@ def main(window):
             if((player.rect.right - offset_x >= WIDTH - scroll_area_width) and player.x_vel > 0) or (
                 (player.rect.left - offset_x <= scroll_area_width) and player.x_vel < 0):
                 offset_x += player.x_vel     
-
-    print("wyszlo sie")       
+     
     pygame.quit()
     quit()
 

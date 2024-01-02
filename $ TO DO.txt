@@ -1,5 +1,6 @@
 KONCOWA KOSMETYKA MENU
 customowy kursor
+slajdy po krawędzi
 animacja pojawiania sie bohatera na starcie lvla
 dodanie animacji okna zwyciestwa
 dodanie przeciwnikow

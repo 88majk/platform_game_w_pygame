@@ -6,7 +6,6 @@ class Strawberry(Object):
     ANIMATION_DELAY = 3
     all_strawberries = pygame.sprite.Group()
 
-
     def __init__(self, x, y, width, height):
         super().__init__(x, y, width, height, "Strawberry")
         self.strawberry = load_sprite_sheets("Items", "Fruits", width, height)
@@ -25,7 +24,6 @@ class Strawberry(Object):
         sprite_index = (self.animation_count // self.ANIMATION_DELAY) % len(sprites)
 
         if self.collected:
-            self.collected = True
             self.image = self.get_collect_animation_frame()
             self.collect_animation_count += 1
             

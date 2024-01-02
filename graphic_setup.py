@@ -68,7 +68,7 @@ def mark_button(button):
     return action  
 
 
-def draw(window, background, bg_image, player, objects, superiors, offset_x):
+def draw(window, background, bg_image, player, objects, superiors, elements, offset_x):
     for tile in background:
         window.blit(bg_image, tile)
 
@@ -77,6 +77,9 @@ def draw(window, background, bg_image, player, objects, superiors, offset_x):
     
     for sup in superiors:
         sup.draw(window, offset_x)
+    
+    for elem in elements:
+        elem.draw(window, offset_x)
 
     player.draw(window, offset_x)
 

@@ -78,7 +78,7 @@ class Player(pygame.sprite.Sprite):
         self.y_vel *= -1
 
     def win(self):
-        self.score = self.score + 100*self.life_points
+        self.score  += 100*self.life_points
         
 
     def update_sprite(self):
