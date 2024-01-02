@@ -1,8 +1,4 @@
-import os, random, math
 import pygame
-from os import listdir
-from os.path import isfile, join
-from pygame.sprite import Group
 
 from graphic_setup import *
 from collisions import *
@@ -12,6 +8,7 @@ from menu import *
 from levels.level1 import *
 from levels.level2 import *
 from picture import Picture
+from pygame.locals import *
 
 FPS = 60
 PLAYER_VEL = 5
@@ -58,11 +55,12 @@ def main(window):
 
     # LISTY POTRZEBNE DO RYSOWANIA ZESTAWOW PRZYCISKOW W ZALEZNOSCI OD STANU
     menu_buttons = [levels_button, settings_button, exit_button]
-    levels_buttons = [level01_button, level02_button, level03_button]
-    pause_buttons = [exit_from_game_button]
+    levels_buttons = [level01_button, level02_button, level03_button, backFromLvls_button]
+    pause_buttons = [restart_button, exit_from_game_button]
+    win_buttons = [levels_endlvl_button, restart_endlvl_button]
 
     # LISTA DO RYSOWANIA TLA MENU GLOWNEGO
-    menu_floor = [Block(i*block_size, HEIGHT - block_size, block_size, 0, 0) for i in range(-WIDTH // block_size, WIDTH * 2//block_size)]
+    menu_floor = [Block(i*block_size, HEIGHT - block_size, block_size, 96, 0) for i in range(-WIDTH // block_size, WIDTH * 2//block_size)]
 
     ##### STANY #####
     play_state = False # STAN GRY - WYSWIETLANIE MAPY ORAZ BOHATERA
@@ -78,23 +76,19 @@ def main(window):
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    run = False
-                    break
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        play_state = False
+                    pass
 
             if mark_button(levels_button):
-                levels_choice = True
                 menu_state = False
+                levels_choice = True
             if mark_button(exit_button):
                 menu_state = False
                 run = False
             if mark_button(settings_button):
                 pass
             
-            
-            draw_menu(window, background, bg_image, menu_floor, 0, menu_buttons)
+            draw_menu(window, background, bg_image, menu_floor, 0)
+            draw_buttons(window, menu_buttons)
             draw_text(window, "PJF Adventures", title_font, TITLE_COL, 50, 50)
             draw_text(window, "Levels", font, TEXT_COL, 180, 255)
             draw_text(window, "Settings", font, TEXT_COL, 180, 315)
@@ -106,12 +100,10 @@ def main(window):
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    run = False
-                    break
+                    pass
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        menu_state = True
-                        levels_choice = False
+                        pass
             
             if mark_button(level01_button):
                 level = Level1()
@@ -123,22 +115,27 @@ def main(window):
                 level_reset = True
                 play_state = True
                 levels_choice = False
+            if mark_button(backFromLvls_button):
+                menu_state = True
+                levels_choice = False
 
-            draw_menu(window, background, bg_image, menu_floor, 0, levels_buttons)
+            draw_menu(window, background, bg_image, menu_floor, 0)
+            draw_buttons(window, levels_buttons)
             draw_text(window, "PJF Adventures", title_font, TITLE_COL, 50, 50)
-            draw_text(window, "Choose level", font, TEXT_COL, 120, 250)
-            
-        if level_reset:
-            offset_x = 0
-            level.reset_level()
-            player = Player(100, 100, 50, 50)
-            player.score = 0
-            player.life_points = 3
-            level_reset = False
+            draw_text(window, "Choose level", font, TEXT_COL, 120, 280)
+            draw_text(window, "Back to menu", font, TEXT_COL, 150, 416)
         
         while play_state:
             clock.tick(FPS)
             pygame.display.update()
+
+            if level_reset:
+                offset_x = 0
+                level.reset_level()
+                player = Player(80, 100, 50, 50)
+                player.score = 0
+                player.life_points = 3
+                level_reset = False
 
             # ODCZYT KLAWISZY
             for event in pygame.event.get():
@@ -170,12 +167,86 @@ def main(window):
                     pause_state = False
                     play_state = False
                     menu_state = True
+                if mark_button(restart_button):
+                    level_reset = True
+                    level.clear_map()
+                    pause_state = False
+                    play_state = True
 
-                draw_text(window, "Paused", font, TEXT_COL, 400, 200)
-                draw_text(window, "Exit to menu", smaller_font, TEXT_COL, 430, 250)
+
+                frame = Picture(frame_img, 1)
+                frame.draw(window, 265, 140)
+                draw_text(window, "Paused", font, (66, 45, 32), 420, 200)
+                draw_text(window, "Restart level", smaller_font,  (66, 45, 32), 450, 250)
+                draw_text(window, "Exit to menu", smaller_font,  (66, 45, 32), 450, 280)
                 draw_buttons(window, pause_buttons) # 400, 250
             ######################################################################
+            
 
+            # WARUNEK SKONCZENIA POZIOMU (ZEBRANIA FLAGI FINAL) ORAZ WYSWIETLENIE MENU
+            while level_win[0]:
+                clock.tick(FPS)
+                pygame.display.update()
+
+                for event in pygame.event.get():
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            pass
+
+                if mark_button(levels_endlvl_button):
+                    level_reset = True
+                    level.clear_map()
+                    player.kill()
+                    play_state = False
+                    levels_choice = True
+                    level_win[0] = False
+                if mark_button(restart_endlvl_button):
+                    level_reset = True
+                    level.clear_map()
+                    player.kill()
+                    level_win[0] = False
+                    play_state = True
+
+                frame_win = Picture(frame_img, 1)
+                frame_win.draw(window, 265, 140)
+                draw_text(window, "You won!", font, (66, 45, 32), 420, 200)
+                draw_text(window, "Switch level", smaller_font,  (66, 45, 32), 450, 250)
+                draw_text(window, "Restart level", smaller_font,  (66, 45, 32), 450, 280)
+                draw_buttons(window, win_buttons)
+            ##########################################################
+                
+            
+            # WARUNEK UTRATY WSZYSTKICH ZYC (GAME OVER)
+            while player.life_points == 0:
+                clock.tick(FPS)
+                pygame.display.update()
+
+                for event in pygame.event.get():
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            pass
+
+                if mark_button(levels_endlvl_button):
+                    level_reset = True
+                    level.clear_map()
+                    player.kill()
+                    play_state = False
+                    levels_choice = True
+                    break
+                if mark_button(restart_endlvl_button):
+                    level_reset = True
+                    level.clear_map()
+                    player.kill()
+                    play_state = True
+                    break
+
+                frame_win = Picture(frame_img, 1)
+                frame_win.draw(window, 265, 140)
+                draw_text(window, "Game over", font, (66, 45, 32), 420, 200)
+                draw_text(window, "Switch level", smaller_font,  (66, 45, 32), 450, 250)
+                draw_text(window, "Restart level", smaller_font,  (66, 45, 32), 450, 280)
+                draw_buttons(window, win_buttons)
+            ##########################################################
 
             # WŁĄCZANIE ANIMACJI
             player.loop(FPS)
@@ -191,33 +262,17 @@ def main(window):
             draw_text(window, str(player.score), font_score, SCORE_COL, 10, 10)
             
             # RYSOWANIE AKTUALNEJ LICZBY ZYC
-            heart_img = pygame.image.load("assets/Menu/Buttons/play.png").convert_alpha()
+            heart_img = pygame.image.load("assets/Other/heart.png").convert_alpha()
             hearts = [Picture(heart_img, 2) for i in range (1, player.life_points + 1)]
             for i, heart in enumerate(hearts):
-                heart.draw(window, 950 - 50*i, 10)      
+                heart.draw(window, 950 - 55*i, 10)      
 
             # PRZEWIJANIE MAPY
             if((player.rect.right - offset_x >= WIDTH - scroll_area_width) and player.x_vel > 0) or (
                 (player.rect.left - offset_x <= scroll_area_width) and player.x_vel < 0):
-                offset_x += player.x_vel
-                
-            # CZYSZCZENIE MAPY PO UTRACIE ŻYĆ
-            if player.life_points == 0:
-                level.clear_map()
-                player.kill()
-                play_state = False
-                menu_state = True
-                level_reset = True
-            
-            # WARUNEK SKONCZENIA POZIOMU (ZEBRANIA FLAGI FINAL)
-            if level_win[0]:
-                level_win[0] = False
-                level.clear_map()
-                player.kill()
-                play_state = False
-                menu_state = True
-                level_reset = True
-            
+                offset_x += player.x_vel     
+
+    print("wyszlo sie")       
     pygame.quit()
     quit()
 

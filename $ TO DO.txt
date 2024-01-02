@@ -1,0 +1,7 @@
+KONCOWA KOSMETYKA MENU
+customowy kursor
+animacja pojawiania sie bohatera na starcie lvla
+dodanie animacji okna zwyciestwa
+dodanie przeciwnikow
+dodanie nowych owocow z innymi funkcjami
+koncowa liczba gwiazdek za poziom w zaleznosci od pkt

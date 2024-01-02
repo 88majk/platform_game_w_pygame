@@ -81,15 +81,12 @@ def draw(window, background, bg_image, player, objects, superiors, offset_x):
     player.draw(window, offset_x)
 
 
-def draw_menu(window, background, bg_image, objects, offset_x, buttons):
+def draw_menu(window, background, bg_image, objects, offset_x):
     for tile in background:
         window.blit(bg_image, tile)  
 
     for object in objects:
         object.draw(window,offset_x)
-    
-    for button in buttons:
-        button.draw(window, 0)
 
 def draw_buttons(window, buttons):
     for button in buttons:
