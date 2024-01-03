@@ -15,10 +15,11 @@ class SpikeHead(Object):
         self.mask = pygame.mask.from_surface(self.image)
         self.animation_count = 0
         self.animation_name = "Blink (54x52)"
+
         ### ANIMACJA ZDERZENIA
         self.hit_animation_count = 0
-        self.hit_animation_name = "Left Hit (54x52)"
-        self.image = self.spikeHead["Left Hit (54x52)"][0]
+        # self.hit_animation_name = "Left Hit (54x52)"
+        # self.image = self.spikeHead["Left Hit (54x52)"][0]
         self.L_hit = False
         self.R_hit = False
         self.current_speed = self.MAX_SPEED 

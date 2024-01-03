@@ -10,7 +10,10 @@ def handle_vertical_collsion(player, objects, interact_elements, dy):
             elif dy < 0:
                 player.rect.top = obj.rect.bottom
                 player.hit_head()
+            else:
+                player.rect.top = obj.rect.top
             collided_objects.append(obj)
+
     for obj in interact_elements:
         if pygame.sprite.collide_mask(player, obj):
             if dy > 0:

@@ -1,7 +1,6 @@
 KONCOWA KOSMETYKA MENU
 customowy kursor
 slajdy po krawędzi
-lepsza animacja spadających platform
 animacja pojawiania sie bohatera na starcie lvla
 dodanie animacji okna zwyciestwa
 dodanie przeciwnikow

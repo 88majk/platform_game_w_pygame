@@ -22,6 +22,8 @@ def handle_move(player, objects, interact_elements, superiors): # FUNKCJA STEROW
 
     if keys[pygame.K_a] and not collide_left:
         player.move_left(PLAYER_VEL)
+    if keys[pygame.K_a] and  collide_left:
+        player.move_left(PLAYER_VEL)
     if keys[pygame.K_d] and not collide_right:
         player.move_right(PLAYER_VEL)
 
@@ -39,6 +41,10 @@ def handle_move(player, objects, interact_elements, superiors): # FUNKCJA STEROW
         if obj and obj.name == "saw":
             player.make_hit()
         if obj and obj.name == "spike_head":
+            player.make_hit()
+        if obj and obj.name == "spikedball":
+            player.make_hit()
+        if obj and obj.name == "chain":
             player.make_hit()
         
         if obj and obj.name == "falling_platforms":
