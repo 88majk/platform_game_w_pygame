@@ -15,4 +15,7 @@ class Block(Object):
         super().__init__(x, y, size, size)
         block = load_block(size, choice1, choice2)
         self.image.blit(block, (0,0))
-        self.mask = pygame.mask.from_surface(self.image)  
+        self.mask = pygame.mask.from_surface(self.image)
+
+    def loop(self):
+        pass 

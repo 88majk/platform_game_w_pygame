@@ -30,17 +30,29 @@ def handle_move(player, objects, interact_elements, superiors): # FUNKCJA STEROW
     
     # SPRAWDZANIE I OBSLUGA KOLIZJI POSTACI
     to_check = [*collide_left, *collide_right, *vertical_collide, *superiors_collected]
+
     for obj in to_check:
         if obj and obj.name == "fire":
             player.make_hit()
         if obj and obj.name == "spikes":
             player.make_hit()
+        if obj and obj.name == "saw":
+            player.make_hit()
+        if obj and obj.name == "spike_head":
+            player.make_hit()
+        
         if obj and obj.name == "falling_platforms":
-                obj.jumpedOn = True
-        if obj and obj.name == "Strawberry" and not obj.collected:
+            obj.jumpedOn = True
+
+        if obj and obj.name == "strawberry" and not obj.collected:
             player.collect_straw()
             if obj in superiors:
                 obj.collected = True
+        if obj and obj.name == "apple" and not obj.collected:
+            player.collect_apple()
+            if obj in superiors:
+                obj.collected = True
+
         if obj and obj.name == "final_flag":
             level_win[0] = True
             player.win()          
@@ -52,7 +64,9 @@ def main(window):
     block_size = 96
     
     offset_x = 0
-    scroll_area_width = 200
+    offset_y = 0
+    scroll_area_width_x = 270
+    scroll_area_width_y = 50
 
     # LISTY POTRZEBNE DO RYSOWANIA ZESTAWOW PRZYCISKOW W ZALEZNOSCI OD STANU
     menu_buttons = [levels_button, settings_button, exit_button]
@@ -88,12 +102,12 @@ def main(window):
             if mark_button(settings_button):
                 pass
             
-            draw_menu(window, background, bg_image, menu_floor, 0)
+            draw_menu(window, background, bg_image, menu_floor, 0, 0)
             draw_buttons(window, menu_buttons)
-            draw_text(window, "PJF Adventures", title_font, TITLE_COL, 50, 50)
-            draw_text(window, "Levels", font, TEXT_COL, 180, 255)
-            draw_text(window, "Settings", font, TEXT_COL, 180, 315)
-            draw_text(window, "Exit", font, TEXT_COL, 180, 370)
+            draw_text(window, "PJF Adventures", title_font, TITLE_COL, 70, 50)
+            draw_text(window, "Levels", font, TEXT_COL, 230, 255)
+            draw_text(window, "Settings", font, TEXT_COL, 230, 315)
+            draw_text(window, "Exit", font, TEXT_COL, 230, 370)
 
         while levels_choice:
             clock.tick(FPS)
@@ -120,9 +134,9 @@ def main(window):
                 menu_state = True
                 levels_choice = False
 
-            draw_menu(window, background, bg_image, menu_floor, 0)
+            draw_menu(window, background, bg_image, menu_floor, 0, 0)
             draw_buttons(window, levels_buttons)
-            draw_text(window, "PJF Adventures", title_font, TITLE_COL, 50, 50)
+            draw_text(window, "PJF Adventures", title_font, TITLE_COL, 70, 50)
             draw_text(window, "Choose level", font, TEXT_COL, 120, 280)
             draw_text(window, "Back to menu", font, TEXT_COL, 150, 416)
         
@@ -132,6 +146,7 @@ def main(window):
 
             if level_reset:
                 offset_x = 0
+                offset_y = 0
                 level.reset_level()
                 player = Player(80, 100, 50, 50)
                 player.score = 0
@@ -176,10 +191,10 @@ def main(window):
 
 
                 frame = Picture(frame_img, 1)
-                frame.draw(window, 265, 140)
-                draw_text(window, "Paused", font, (66, 45, 32), 420, 200)
-                draw_text(window, "Restart level", smaller_font,  (66, 45, 32), 450, 250)
-                draw_text(window, "Exit to menu", smaller_font,  (66, 45, 32), 450, 280)
+                frame.draw(window, 415, 140)
+                draw_text(window, "Paused", font, (66, 45, 32), 570, 200)
+                draw_text(window, "Restart level", smaller_font,  (66, 45, 32), 580, 250)
+                draw_text(window, "Exit to menu", smaller_font,  (66, 45, 32), 580, 280)
                 draw_buttons(window, pause_buttons) # 400, 250
             ######################################################################
             
@@ -209,10 +224,10 @@ def main(window):
                     play_state = True
 
                 frame_win = Picture(frame_img, 1)
-                frame_win.draw(window, 265, 140)
-                draw_text(window, "You won!", font, (66, 45, 32), 420, 200)
-                draw_text(window, "Switch level", smaller_font,  (66, 45, 32), 450, 250)
-                draw_text(window, "Restart level", smaller_font,  (66, 45, 32), 450, 280)
+                frame_win.draw(window, 415, 140)
+                draw_text(window, "You won!", font, (66, 45, 32), 570, 200)
+                draw_text(window, "Switch level", smaller_font,  (66, 45, 32), 580, 250)
+                draw_text(window, "Restart level", smaller_font,  (66, 45, 32), 580, 280)
                 draw_buttons(window, win_buttons)
             ##########################################################
                 
@@ -242,38 +257,41 @@ def main(window):
                     break
 
                 frame_win = Picture(frame_img, 1)
-                frame_win.draw(window, 265, 140)
-                draw_text(window, "Game over", font, (66, 45, 32), 420, 200)
-                draw_text(window, "Switch level", smaller_font,  (66, 45, 32), 450, 250)
-                draw_text(window, "Restart level", smaller_font,  (66, 45, 32), 450, 280)
+                frame_win.draw(window, 415, 140)
+                draw_text(window, "Game over", font, (66, 45, 32), 570, 200)
+                draw_text(window, "Switch level", smaller_font,  (66, 45, 32), 580, 250)
+                draw_text(window, "Restart level", smaller_font,  (66, 45, 32), 580, 280)
                 draw_buttons(window, win_buttons)
             ##########################################################
 
             # WŁĄCZANIE ANIMACJI
             player.loop(FPS)
-            for fire in level.fire:
-                fire.loop()
-            for strawberry in level.superiors:
-                strawberry.loop()
-            level.final_flag.loop()
+            for obj in level.objects:
+                obj.loop()
+            for sup in level.superiors:
+                sup.loop()
             for platform in level.interact_elements:
                 platform.loop()
 
             # RYSOWANIE ELEMENTOW MAPY
             handle_move(player, level.objects, level.interact_elements, level.superiors)
-            draw(window, background, bg_image, player, level.objects, level.superiors, level.interact_elements, offset_x)
+            draw(window, background, bg_image, player, level.objects, level.superiors, level.interact_elements, offset_x, offset_y)
             draw_text(window, str(player.score), font_score, SCORE_COL, 10, 10)
             
-            # RYSOWANIE AKTUALNEJ LICZBY ZYC
+            # RYSOWANIE AKTUALNEJ LICZBY 
             heart_img = pygame.image.load("assets/Other/heart.png").convert_alpha()
             hearts = [Picture(heart_img, 2) for i in range (1, player.life_points + 1)]
             for i, heart in enumerate(hearts):
-                heart.draw(window, 950 - 55*i, 10)      
+                heart.draw(window, 1240 - 55*i, 10)      
 
-            # PRZEWIJANIE MAPY
-            if((player.rect.right - offset_x >= WIDTH - scroll_area_width) and player.x_vel > 0) or (
-                (player.rect.left - offset_x <= scroll_area_width) and player.x_vel < 0):
-                offset_x += player.x_vel     
+            # PRZEWIJANIE MAPY PO X
+            if((player.rect.right - offset_x >= WIDTH - scroll_area_width_x) and player.x_vel > 0) or (
+                (player.rect.left - offset_x <= scroll_area_width_x) and player.x_vel < 0):
+                offset_x += player.x_vel
+            # PRZEIWJANIE MAPY PO Y
+            if((player.rect.bottom - offset_y >= HEIGHT - scroll_area_width_y - 150) and player.y_vel > 0) or (
+                (player.rect.top - offset_y <= scroll_area_width_y) and player.y_vel < 0):
+                offset_y += player.y_vel     
      
     pygame.quit()
     quit()

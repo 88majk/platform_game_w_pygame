@@ -50,6 +50,7 @@ class Player(pygame.sprite.Sprite):
         self.y_vel += min(1, (self.fall_count / fps) * self.GRAVITY)
         self.move(self.x_vel, self.y_vel)
         self.fall_count += 1
+        
         if self.hit:
             self.hit_count += 1
         if self.hit_count > fps:
@@ -67,6 +68,10 @@ class Player(pygame.sprite.Sprite):
     
     def collect_straw(self):
         self.score += 10
+    
+    def collect_apple(self):
+        if self.life_points < 3:
+            self.life_points += 1
 
     def landed(self):
         self.fall_count = 0
@@ -107,5 +112,5 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.sprite.get_rect(topleft=(self.rect.x, self.rect.y))
         self.mask = pygame.mask.from_surface(self.sprite)
 
-    def draw(self, window, offset_x):
-        window.blit(self.sprite, (self.rect.x - offset_x, self.rect.y))
+    def draw(self, window, offset_x, offset_y):
+        window.blit(self.sprite, (self.rect.x - offset_x, self.rect.y - offset_y))

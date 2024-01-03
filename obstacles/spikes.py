@@ -11,7 +11,6 @@ class Spikes(Object):
         self.image = self.spike["Idle"][0]
         self.mask = pygame.mask.from_surface(self.image)
         self.animation_name = "Idle"
-        self.loop()
     
     def loop(self):
         sprites = self.spike[self.animation_name]

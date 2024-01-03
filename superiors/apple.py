@@ -2,33 +2,32 @@ import pygame
 from graphic_setup import load_sprite_sheets
 from object import Object
 
-class Strawberry(Object):
+class Apple(Object):
     ANIMATION_DELAY = 3
-    all_strawberries = pygame.sprite.Group()
+    all_apples = pygame.sprite.Group()
 
     def __init__(self, x, y, width, height):
-        super().__init__(x, y, width, height, "strawberry")
-        self.strawberry = load_sprite_sheets("Items", "Fruits", width, height)
-        self.image = self.strawberry["Strawberry"][0]
+        super().__init__(x, y, width, height, "apple")
+        self.apple = load_sprite_sheets("Items", "Fruits", width, height)
+        self.image = self.apple["Apple"][0]
         self.mask = pygame.mask.from_surface(self.image)
         self.animation_count = 0
-        ### ANIMACJA ZBIERANIA
         self.collect_animation_count = 0
         self.collection_pic = load_sprite_sheets("Items", "Fruits", width, height)
         self.image_col = self.collection_pic["Collected"][0]
         self.collected = False
-        Strawberry.all_strawberries.add(self)
+        Apple.all_apples.add(self)
 
     
     def loop(self):
-        sprites = self.strawberry["Strawberry"]
+        sprites = self.apple["Apple"]
         sprite_index = (self.animation_count // self.ANIMATION_DELAY) % len(sprites)
 
         if self.collected:
             self.image = self.get_collect_animation_frame()
             self.collect_animation_count += 1
             
-            if self.collect_animation_count > 12:
+            if self.collect_animation_count > 10:
                 self.collect_animation_count = 0
                 self.kill()
         else:

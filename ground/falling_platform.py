@@ -25,7 +25,7 @@ class FallingPlatform(Object):
         if not self.jumpedOn:
             self.rect = self.image.get_rect(topleft=(self.rect.x, self.rect.y))
         else:
-            self.rect = self.image.get_rect(topleft=(self.rect.x, self.rect.y + 5))
+            self.rect = self.image.get_rect(topleft=(self.rect.x, self.rect.y + 7))
         if self.rect.y > 900:
                 self.jumpedOn = False
                 FallingPlatform.all_falling_platforms.remove(self)

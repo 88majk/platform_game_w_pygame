@@ -3,7 +3,7 @@ import pygame
 from os import listdir
 from os.path import isfile, join
 
-WIDTH, HEIGHT = 1000, 780
+WIDTH, HEIGHT = 1300, 780
 pygame.init()
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 
@@ -68,30 +68,30 @@ def mark_button(button):
     return action  
 
 
-def draw(window, background, bg_image, player, objects, superiors, elements, offset_x):
+def draw(window, background, bg_image, player, objects, superiors, elements, offset_x, offset_y):
     for tile in background:
         window.blit(bg_image, tile)
 
     for object in objects:
-        object.draw(window, offset_x)
+        object.draw(window, offset_x, offset_y)
     
     for sup in superiors:
-        sup.draw(window, offset_x)
+        sup.draw(window, offset_x, offset_y)
     
     for elem in elements:
-        elem.draw(window, offset_x)
+        elem.draw(window, offset_x, offset_y)
 
-    player.draw(window, offset_x)
+    player.draw(window, offset_x, offset_y)
 
 
-def draw_menu(window, background, bg_image, objects, offset_x):
+def draw_menu(window, background, bg_image, objects, offset_x, offset_y):
     for tile in background:
         window.blit(bg_image, tile)  
 
     for object in objects:
-        object.draw(window,offset_x)
+        object.draw(window, offset_x, offset_y)
 
 def draw_buttons(window, buttons):
     for button in buttons:
-        button.draw(window, 0)
+        button.draw(window, 0, 0)
         

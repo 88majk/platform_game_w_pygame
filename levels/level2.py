@@ -18,7 +18,6 @@ class Level2():
         self.fire = [Fire(200, HEIGHT - block_size - 64, 16, 32)]
         self.final_flag = FinalFlag(1000, HEIGHT - block_size - 2*64, 64, 64)
         self.spikes = [Spikes(i*50, HEIGHT - block_size - 2*16, 16, 16) for i in range(2, 22)]
-        self.falling_platforms = []
 
         [Strawberry(i*50, HEIGHT - 5*block_size, 32, 32) for i in range (1,11)]
         [Strawberry(i*50, HEIGHT - 2*block_size, 32, 32) for i in range (11,21)]
@@ -29,6 +28,8 @@ class Level2():
                         Block(block_size * 3, HEIGHT - block_size * 4, block_size, 96, 128),
                         Block(block_size * 3, HEIGHT - block_size * 6, block_size, 96, 128),
                         self.final_flag, *self.spikes]
+        
+        self.interact_elements = []
     
     def clear_map(self):
         self.objects = []
