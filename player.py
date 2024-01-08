@@ -22,24 +22,26 @@ class Player(pygame.sprite.Sprite):
         self.life_points = 3
         self.hit_count = 0
         self.bug_protect = True
+        self.wall_jump = False
     
     def move(self, dx, dy):
         self.rect.x += dx
         self.rect.y += dy
 
     def move_left(self, vel):
+        self.wall_jump = False
         self.x_vel = -vel
         if self.direction != "left":
-            self.direction = "left"
             self.animation_count = 0
 
     def move_right(self, vel):
+        self.wall_jump = False
         self.x_vel = vel
         if self.direction != "right":
-            self.direction = "right"
             self.animation_count = 0
 
     def jump(self):
+        self.wall_jump = False
         self.y_vel = -self.GRAVITY * 4
         self.animation_count = 0
         self.jump_count += 1
@@ -74,9 +76,16 @@ class Player(pygame.sprite.Sprite):
             self.life_points += 1
 
     def landed(self):
+        self.wall_jump = False
         self.fall_count = 0
         self.y_vel = 0
         self.jump_count = 0
+    
+    def slide(self, dy=0):
+        if self.y_vel > 0.5 or self.y_vel < -0.5:
+            self.wall_jump = True
+            self.y_vel = dy/3
+            self.jump_count = 0
     
     def hit_head(self):
         self.count = 0
@@ -90,7 +99,10 @@ class Player(pygame.sprite.Sprite):
         sprite_sheet = "idle"
         if self.hit:
             sprite_sheet = "hit"
-            
+
+        if self.wall_jump:
+            sprite_sheet = "wall_jump"
+
         if self.y_vel < 0:
             if self.jump_count == 1:
                 sprite_sheet = "jump"
@@ -114,3 +126,4 @@ class Player(pygame.sprite.Sprite):
 
     def draw(self, window, offset_x, offset_y):
         window.blit(self.sprite, (self.rect.x - offset_x, self.rect.y - offset_y))
+

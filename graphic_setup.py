@@ -47,15 +47,23 @@ def get_background(name):
     tiles = []
 
     for i in range(WIDTH // width + 1):
-        for j in range(HEIGHT // height + 1):
+        for j in range(-1, HEIGHT // height + 1):
             pos = (i * width, j * height)
             tiles.append(pos)
     return tiles, image
 
+def update_background(tiles, speed):
+    updated_tiles = []
+
+    for x,y in tiles:
+        if y > HEIGHT - 10:
+            y = -64
+        updated_tiles.append((x, y + speed))
+        
+    return updated_tiles
 
 def mark_button(button):
     action = False
-
     pos = pygame.mouse.get_pos()
 
     if button.rect.collidepoint(pos):
@@ -68,9 +76,15 @@ def mark_button(button):
     return action  
 
 
-def draw(window, background, bg_image, player, objects, superiors, elements, offset_x, offset_y):
+def draw(window, background, bg_image, player, objects, superiors, elements, objects_notcoll, enemies, offset_x, offset_y):
     for tile in background:
         window.blit(bg_image, tile)
+
+    for object in objects_notcoll:
+        object.draw(window, offset_x, offset_y)
+
+    for enemy in enemies:
+        enemy.draw(window, offset_x, offset_y)
 
     for object in objects:
         object.draw(window, offset_x, offset_y)

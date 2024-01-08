@@ -3,7 +3,7 @@ from graphic_setup import load_sprite_sheets
 from object import Object
 
 class Apple(Object):
-    ANIMATION_DELAY = 3
+    ANIMATION_DELAY = 2
     all_apples = pygame.sprite.Group()
 
     def __init__(self, x, y, width, height):

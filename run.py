@@ -14,26 +14,38 @@ FPS = 60
 PLAYER_VEL = 5
 level_win = [False]
 
-def handle_move(player, objects, interact_elements, superiors): # FUNKCJA STEROWANIA
+def handle_move(player, objects, interact_elements, superiors, enemies): # FUNKCJA STEROWANIA
     keys = pygame.key.get_pressed()
     player.x_vel = 0
-    collide_left = collide(player, objects, interact_elements, -PLAYER_VEL * 2)
-    collide_right = collide(player, objects, interact_elements, PLAYER_VEL * 2)
+    collide_left = collide(player, objects, interact_elements, enemies, -PLAYER_VEL * 2)
+    collide_right = collide(player, objects, interact_elements, enemies, PLAYER_VEL * 2)
 
-    if keys[pygame.K_a] and not collide_left:
-        player.move_left(PLAYER_VEL)
-    if keys[pygame.K_a] and  collide_left:
-        player.move_left(PLAYER_VEL)
-    if keys[pygame.K_d] and not collide_right:
-        player.move_right(PLAYER_VEL)
+   
+    if keys[pygame.K_a]:
+        player.direction = "left"
+        if not collide_left:
+            player.move_left(PLAYER_VEL)
+        else:
+            player.slide(player.y_vel)
+    if keys[pygame.K_d]:
+        player.direction = "right"
+        if not collide_right:
+            player.move_right(PLAYER_VEL)
+        else:
+            player.slide(player.y_vel)
 
-    vertical_collide = handle_vertical_collsion(player, objects, interact_elements, player.y_vel)
+    top_vertical_collide = top_handle_vertical_collsion(player, objects, interact_elements, enemies, player.y_vel)
+    bot_vertical_collide = bot_handle_vertical_collsion(player, objects, interact_elements, enemies, player.y_vel)
     superiors_collected = collect_superiors(player, superiors)
     
     # SPRAWDZANIE I OBSLUGA KOLIZJI POSTACI
-    to_check = [*collide_left, *collide_right, *vertical_collide, *superiors_collected]
+    to_check = [collide_left, collide_right, *top_vertical_collide, *superiors_collected]
+    
+    for obj in bot_vertical_collide:
+        if obj and obj.name == "fat_bird":
+            obj.test = True
 
-    for obj in to_check:
+    for obj in to_check + bot_vertical_collide:
         if obj and obj.name == "fire":
             player.make_hit()
         if obj and obj.name == "spikes":
@@ -60,13 +72,15 @@ def handle_move(player, objects, interact_elements, superiors): # FUNKCJA STEROW
                 obj.collected = True
 
         if obj and obj.name == "final_flag":
-            level_win[0] = True
-            player.win()          
+            obj.collected = True
+            if obj.lvl_end:
+                player.win()
+     
 
 
 def main(window):
     clock = pygame.time.Clock()
-    background, bg_image = get_background("Purple.png")
+    background, bg_image = get_background("Brown.png")
     block_size = 96
     
     offset_x = 0
@@ -83,6 +97,8 @@ def main(window):
     # LISTA DO RYSOWANIA TLA MENU GLOWNEGO
     menu_floor = [Block(i*block_size, HEIGHT - block_size, block_size, 96, 0) for i in range(-WIDTH // block_size, WIDTH * 2//block_size)]
 
+    pygame.mouse.set_cursor(pygame.cursors.diamond) 
+
     ##### STANY #####
     play_state = False # STAN GRY - WYSWIETLANIE MAPY ORAZ BOHATERA
     levels_choice = False # WYBOR LEVELU - WYSWIETLANIE CZESCI MENU Z WYBOREM POZIOMU
@@ -91,10 +107,11 @@ def main(window):
     run = True # OGOLNY STAN GLOWNEJ PETLI PROGRAMU
 
     while run:
+        
         while menu_state:
             clock.tick(FPS) 
             pygame.display.update()
-
+            background = update_background(background, 1)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pass
@@ -118,7 +135,7 @@ def main(window):
         while levels_choice:
             clock.tick(FPS)
             pygame.display.update()
-
+            background = update_background(background, 1)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pass
@@ -149,7 +166,7 @@ def main(window):
         while play_state:
             clock.tick(FPS)
             pygame.display.update()
-
+            background = update_background(background, 1)
             if level_reset:
                 offset_x = 0
                 offset_y = 0
@@ -176,7 +193,7 @@ def main(window):
             while pause_state:
                 clock.tick(FPS)
                 pygame.display.update()
-
+                background = update_background(background, 1)
                 for event in pygame.event.get():
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
@@ -204,12 +221,11 @@ def main(window):
                 draw_buttons(window, pause_buttons) # 400, 250
             ######################################################################
             
-
             # WARUNEK SKONCZENIA POZIOMU (ZEBRANIA FLAGI FINAL) ORAZ WYSWIETLENIE MENU
             while level_win[0]:
                 clock.tick(FPS)
                 pygame.display.update()
-
+                background = update_background(background, 1)
                 for event in pygame.event.get():
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
@@ -242,7 +258,7 @@ def main(window):
             while player.life_points == 0:
                 clock.tick(FPS)
                 pygame.display.update()
-
+                background = update_background(background, 1)
                 for event in pygame.event.get():
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
@@ -272,16 +288,21 @@ def main(window):
 
             # WŁĄCZANIE ANIMACJI
             player.loop(FPS)
-            for obj in level.objects:
+            for obj in level.objects + level.objects_notcoll:
                 obj.loop()
+                if obj and obj.name == "final_flag": ##sprawdz warunek zebrania flagi (tutaj, zeby było płynne zakończenie poziomu)
+                    if obj.lvl_end:
+                        level_win[0] = True
             for sup in level.superiors:
                 sup.loop()
-            for platform in level.interact_elements:
+            for platform in level.interact_elements: 
                 platform.loop()
+            for sup in level.enemies:
+                sup.loop()
 
             # RYSOWANIE ELEMENTOW MAPY
-            handle_move(player, level.objects, level.interact_elements, level.superiors)
-            draw(window, background, bg_image, player, level.objects, level.superiors, level.interact_elements, offset_x, offset_y)
+            handle_move(player, level.objects, level.interact_elements, level.superiors, level.enemies)
+            draw(window, background, bg_image, player, level.objects, level.superiors, level.interact_elements, level.objects_notcoll, level.enemies, offset_x, offset_y)
             draw_text(window, str(player.score), font_score, SCORE_COL, 10, 10)
             
             # RYSOWANIE AKTUALNEJ LICZBY 

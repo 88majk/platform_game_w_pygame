@@ -5,6 +5,7 @@ from object import Object
 from player import Player
 from ground.block import Block
 from ground.falling_platform import FallingPlatform
+
 from obstacles.fire import Fire
 from obstacles.spikes import Spikes
 from obstacles.saw import Saw
@@ -14,6 +15,9 @@ from obstacles.chain import Chain
 from superiors.strawberry import Strawberry
 from superiors.apple import Apple
 from obstacles.final_flag import FinalFlag
+from obstacles.arrow_sign import ArrowSign
+
+from enemies.fat_bird import FatBird
 
 class Level1():
     
@@ -23,11 +27,12 @@ class Level1():
         self.level2 = [Block(i*block_size, HEIGHT + 2*block_size, block_size, 96, 0) for i in range(-WIDTH // block_size, WIDTH * 2//block_size)]
         self.floor = [*self.level1, *self.level2]
 
+        self.start_platform = ArrowSign(100, HEIGHT - block_size - 2*64, 64, 64)
         self.final_flag = FinalFlag(1000, HEIGHT - block_size - 2*64, 64, 64)
 
         
-        self.spiked_ball = SpikedBall(-628, 600, 28, 28, 140)
-        self.chains = [Chain(-608, 620, 8, 8, i * 25) for i in range(1, 5)]
+        self.spiked_ball = SpikedBall(-628, 600, 28, 28, 200)
+        self.chains = [Chain(-608, 620, 8, 8, i * 25) for i in range(1, 8)]
 
         [FallingPlatform(i*100, HEIGHT - block_size - 4*16, 32, 10) for i in range(1, 10)]
 
@@ -44,6 +49,7 @@ class Level1():
                        Block(block_size * 15, HEIGHT + block_size , block_size, 96, 0), 
                        Block(0, HEIGHT - block_size * 2, block_size, 96, 0),
                        Block(0, HEIGHT - block_size * 3, block_size, 96, 0),
+                       Block(0, HEIGHT - block_size * 4, block_size, 96, 0),
                        Block(block_size * 5, HEIGHT - block_size * 6, block_size, 96, 0),
                        Block(block_size * 6, HEIGHT - block_size * 6, block_size, 96, 0),
                        Block(block_size * 7, HEIGHT - block_size * 6, block_size, 96, 0),
@@ -60,18 +66,25 @@ class Level1():
         
 
         ### KONCOWE DODANIE ELEMENTOW DO LIST
-        self.objects = [*self.floor, *self.saws, *self.chains, *self.blocks, *self.fire, *self.spikes, self.final_flag, self.spiked_ball]
+        self.objects = [*self.floor, *self.saws, *self.blocks, *self.fire, self.final_flag, self.spiked_ball]
+        self.objects_notcoll = [self.start_platform, *self.chains]
         
         self.superiors = Apple.all_apples
         self.superiors.add(Strawberry.all_strawberries)
         
 
         self.spikehead = SpikeHead(block_size * 8, HEIGHT + block_size - 14, 54, 52, self.blocks)
+
         self.interact_elements = pygame.sprite.Group()
-        self.interact_elements.add(FallingPlatform.all_falling_platforms, self.spikehead)
+        #self.interact_elements.add(FallingPlatform.all_falling_platforms, self.spikehead)
+
+        FatBird(-100, HEIGHT - 2*block_size + 16, 40, 48, self.objects, 400)
+        self.enemies = FatBird.all_fatbirds
     
     def clear_map(self):
         self.objects = []
+        self.objects_notcoll = []
+        self.enemies = []
         # INNE CZYSZCZENIE NIE DZIALA (NIE WIEM CZEMU NA OBECNA CHWILE)
         for sup in self.superiors:
             sup.kill()

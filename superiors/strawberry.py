@@ -3,7 +3,7 @@ from graphic_setup import load_sprite_sheets
 from object import Object
 
 class Strawberry(Object):
-    ANIMATION_DELAY = 3
+    ANIMATION_DELAY = 2
     all_strawberries = pygame.sprite.Group()
 
     def __init__(self, x, y, width, height):

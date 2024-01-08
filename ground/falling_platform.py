@@ -33,7 +33,7 @@ class FallingPlatform(Object):
             displacement = 20 * math.sin(self.linspace / 20)  
             self.rect = self.image.get_rect(topleft=(self.rect.x, self.original_y + displacement))
         else:
-            self.fall_speed += 1.3
+            self.fall_speed += 0.85
             self.rect = self.image.get_rect(topleft=(self.rect.x, self.rect.y + self.fall_speed))
         
         if self.rect.y > 1300:
