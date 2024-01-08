@@ -1,7 +1,6 @@
 import pygame
 from graphic_setup import load_sprite_sheets
 from object import Object
-import random
 
 class FatBird(Object):
     ANIMATION_DELAY = 3
@@ -17,7 +16,8 @@ class FatBird(Object):
         self.fall_animation_count = 0
         self.flightPeek = False
         self.killed = False
-        self.test = False
+        self.active = True
+        self.jumpedOn = False
         self.bugProtect = True
         self.fall_speed = 0
         self.flight_height = flight_height
@@ -41,13 +41,14 @@ class FatBird(Object):
                         self.flightPeek = False
                         self.fall_speed = 0  
 
-        if self.test and not self.killed:
+        if self.jumpedOn and not self.killed:
                 self.image = self.get_animation_frame("Hit (40x48)")
                 self.fall_animation_count += 1
                 if self.fall_animation_count > 14:
                     self.fall_animation_count = 0
                     self.killed = True
-                    self.test = False
+                    self.jumpedOn = False
+
         elif not self.flightPeek and not self.killed:
             self.animation_name = "Idle (40x48)"
             self.displacement -= self.flight_vel

@@ -1,14 +1,16 @@
 import pygame
 from graphic_setup import load_sprite_sheets
+import time
 
 class Player(pygame.sprite.Sprite):
     COLOR = (255, 0, 0)
     GRAVITY = 3
-    SPRITES = load_sprite_sheets("MainCharacters", "NinjaFrog", 32, 32, True)
+    
     ANIMATION_DELAY = 3
 
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y, width, height, name):
         super().__init__()
+        self.SPRITES = load_sprite_sheets("MainCharacters", name, 32, 32, True)
         self.rect = pygame.Rect(x, y, width, height)
         self.x_vel = 0
         self.y_vel = 0
@@ -23,6 +25,10 @@ class Player(pygame.sprite.Sprite):
         self.hit_count = 0
         self.bug_protect = True
         self.wall_jump = False
+        ### timery
+        self.gravity_multiplier = 1  # Mnożnik grawitacji, domyślnie 1
+        self.gravity_reduction_start_time = 0  # Czas rozpoczęcia redukcji grawitacji
+        self.gravity_reduction_duration = 10
     
     def move(self, dx, dy):
         self.rect.x += dx
@@ -62,13 +68,21 @@ class Player(pygame.sprite.Sprite):
             self.bug_protect = True
         self.update_sprite()
 
+        ### timery
+        if self.gravity_multiplier < 1 and time.time() - self.gravity_reduction_start_time > self.gravity_reduction_duration:
+            # Jeśli mnożnik grawitacji jest mniejszy niż 1 i minął określony czas redukcji
+            self.gravity_multiplier = 1  # Przywróć normalny mnożnik grawitacji
+
+        self.y_vel += min(1, (self.fall_count / fps) * self.GRAVITY / self.gravity_multiplier)
+
+
     def make_hit(self):
         if self.bug_protect:
             self.hit = True
             self.hit_count = 0
             self.bug_protect = False
     
-    def collect_straw(self):
+    def collect_points(self):
         self.score += 10
     
     def collect_apple(self):
@@ -80,6 +94,7 @@ class Player(pygame.sprite.Sprite):
         self.fall_count = 0
         self.y_vel = 0
         self.jump_count = 0
+        print("land")
     
     def slide(self, dy=0):
         if self.y_vel > 0.5 or self.y_vel < -0.5:
@@ -126,4 +141,8 @@ class Player(pygame.sprite.Sprite):
 
     def draw(self, window, offset_x, offset_y):
         window.blit(self.sprite, (self.rect.x - offset_x, self.rect.y - offset_y))
+    
+    def start_gravity_reduction(self):
+        self.gravity_multiplier = 0.001  # Ustaw mnożnik grawitacji na niższą wartość
+        self.gravity_reduction_start_time = time.time()
 

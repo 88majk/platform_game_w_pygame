@@ -1,5 +1,10 @@
-KONCOWA KOSMETYKA MENU
-wybor bohatera
+wybor bohatera (dodać animacje)
+dodać instrukcję do menu glownego
+    - klawisze i co robią
+    - szybki opis owocow
 dodanie przeciwnikow
 dodanie nowych owocow z innymi funkcjami
 koncowa liczba gwiazdek za poziom w zaleznosci od pkt
+
+projektowanie leveli
+KONCOWA KOSMETYKA MENU

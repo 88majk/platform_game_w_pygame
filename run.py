@@ -40,10 +40,21 @@ def handle_move(player, objects, interact_elements, superiors, enemies): # FUNKC
     
     # SPRAWDZANIE I OBSLUGA KOLIZJI POSTACI
     to_check = [collide_left, collide_right, *top_vertical_collide, *superiors_collected]
-    
+    enemies_hitlist = [collide_left, collide_right, *top_vertical_collide]
+
     for obj in bot_vertical_collide:
         if obj and obj.name == "fat_bird":
-            obj.test = True
+            obj.active = False
+            obj.jumpedOn = True
+        if obj and obj.name == "blue_bird":
+            obj.active = False
+            obj.jumpedOn = True
+    
+    for obj in enemies_hitlist:
+        if obj and obj.name == "fat_bird" and obj.active:
+            player.make_hit()
+        if obj and obj.name == "blue_bird" and obj.active:
+            player.make_hit()
 
     for obj in to_check + bot_vertical_collide:
         if obj and obj.name == "fire":
@@ -58,16 +69,24 @@ def handle_move(player, objects, interact_elements, superiors, enemies): # FUNKC
             player.make_hit()
         if obj and obj.name == "chain":
             player.make_hit()
-        
+
         if obj and obj.name == "falling_platforms":
             obj.jumpedOn = True
 
         if obj and obj.name == "strawberry" and not obj.collected:
-            player.collect_straw()
+            player.collect_points()
             if obj in superiors:
                 obj.collected = True
         if obj and obj.name == "apple" and not obj.collected:
             player.collect_apple()
+            if obj in superiors:
+                obj.collected = True
+        if obj and obj.name == "cherry" and not obj.collected:
+            player.collect_points()
+            if obj in superiors:
+                obj.collected = True
+        if obj and obj.name == "pineapple" and not obj.collected:
+            player.start_gravity_reduction()
             if obj in superiors:
                 obj.collected = True
 
@@ -88,8 +107,12 @@ def main(window):
     scroll_area_width_x = 270
     scroll_area_width_y = 50
 
+    picked_hero = "NinjaFrog"
+    heart_img = pygame.image.load("assets/Other/heart.png").convert_alpha()
+
     # LISTY POTRZEBNE DO RYSOWANIA ZESTAWOW PRZYCISKOW W ZALEZNOSCI OD STANU
     menu_buttons = [levels_button, settings_button, exit_button]
+    settings_buttons = [ninjafrog_button, virtualguy_button, pinkman_button, backFromSettings_button]
     levels_buttons = [level01_button, level02_button, level03_button, backFromLvls_button]
     pause_buttons = [restart_button, exit_from_game_button]
     win_buttons = [levels_endlvl_button, restart_endlvl_button]
@@ -101,6 +124,7 @@ def main(window):
 
     ##### STANY #####
     play_state = False # STAN GRY - WYSWIETLANIE MAPY ORAZ BOHATERA
+    settings_state = False # STAN USTAWIEN
     levels_choice = False # WYBOR LEVELU - WYSWIETLANIE CZESCI MENU Z WYBOREM POZIOMU
     menu_state = True # POCZATKOWY STAN WYSWIETLANIA MENU
     pause_state = False # STAN WYSTEPUJACY W TRAKCIE STANU PLAY STATE - PAUZA W GRZE
@@ -123,9 +147,12 @@ def main(window):
                 menu_state = False
                 run = False
             if mark_button(settings_button):
-                pass
+                menu_state = False
+                settings_state = True
+
             
             draw_menu(window, background, bg_image, menu_floor, 0, 0)
+            
             draw_buttons(window, menu_buttons)
             draw_text(window, "PJF Adventures", title_font, TITLE_COL, 70, 50)
             draw_text(window, "Levels", font, TEXT_COL, 230, 255)
@@ -163,6 +190,35 @@ def main(window):
             draw_text(window, "Choose level", font, TEXT_COL, 120, 280)
             draw_text(window, "Back to menu", font, TEXT_COL, 150, 416)
         
+        while settings_state:
+            clock.tick(FPS)
+            pygame.display.update()
+            background = update_background(background, 1)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pass
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        settings_state = False
+                        menu_state = True
+            
+            if mark_button(ninjafrog_button):
+                picked_hero = "NinjaFrog"
+            if mark_button(virtualguy_button):
+                picked_hero = "VirtualGuy"
+            if mark_button(pinkman_button):
+                picked_hero = "PinkMan"
+            if mark_button(backFromSettings_button):
+                settings_state = False
+                menu_state = True
+
+            draw_menu(window, background, bg_image, menu_floor, 0, 0)
+            draw_buttons(window, settings_buttons)
+            draw_text(window, "PJF Adventures", title_font, TITLE_COL, 70, 50)
+            draw_text(window, f"Picked hero: {picked_hero}", smaller_font, (255,255,255), 130, 390)
+            
+
         while play_state:
             clock.tick(FPS)
             pygame.display.update()
@@ -171,7 +227,7 @@ def main(window):
                 offset_x = 0
                 offset_y = 0
                 level.reset_level()
-                player = Player(80, 100, 50, 50)
+                player = Player(80, 100, 50, 50, picked_hero)
                 player.score = 0
                 player.life_points = 3
                 level_reset = False
@@ -247,6 +303,7 @@ def main(window):
 
                 frame_win = Picture(frame_img, 1)
                 frame_win.draw(window, 415, 140)
+                ### tutaj dodac gwiazdki za poziom
                 draw_text(window, "You won!", font, (66, 45, 32), 570, 200)
                 draw_text(window, "Switch level", smaller_font,  (66, 45, 32), 580, 250)
                 draw_text(window, "Restart level", smaller_font,  (66, 45, 32), 580, 280)
@@ -306,7 +363,6 @@ def main(window):
             draw_text(window, str(player.score), font_score, SCORE_COL, 10, 10)
             
             # RYSOWANIE AKTUALNEJ LICZBY 
-            heart_img = pygame.image.load("assets/Other/heart.png").convert_alpha()
             hearts = [Picture(heart_img, 2) for i in range (1, player.life_points + 1)]
             for i, heart in enumerate(hearts):
                 heart.draw(window, 1240 - 55*i, 10)      

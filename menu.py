@@ -41,6 +41,18 @@ level03_button = Button(230, 330, level03_img, 2)
 backFromLvls_button = Button(120, 420, back_img, 2)
 
 
+#### PRZYCISKI MENU USTAWIEN
+ninjafrog_img = pygame.image.load("assets/MainCharacters/NinjaFrog/fall.png")
+ninjafrog_button = Button(130, 330, ninjafrog_img, 2)
+
+virtualguy_img = pygame.image.load("assets/MainCharacters/VirtualGuy/fall.png")
+virtualguy_button = Button(180, 330, virtualguy_img, 2)
+
+pinkman_img = pygame.image.load("assets/MainCharacters/PinkMan/fall.png")
+pinkman_button = Button(230, 330, pinkman_img, 2)
+
+backFromSettings_button = Button(120, 420, back_img, 2)
+
 
 #### PRZYCISKI MENU PAUZY GRY
 frame_img = pygame.image.load("assets/Other/frame1.png").convert_alpha()

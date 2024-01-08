@@ -12,12 +12,16 @@ from obstacles.saw import Saw
 from obstacles.spike_head import SpikeHead
 from obstacles.spiked_ball import SpikedBall
 from obstacles.chain import Chain
-from superiors.strawberry import Strawberry
-from superiors.apple import Apple
 from obstacles.final_flag import FinalFlag
 from obstacles.arrow_sign import ArrowSign
 
+from superiors.strawberry import Strawberry
+from superiors.apple import Apple
+from superiors.cherry import Cherry
+from superiors.pineapple import Pineapple
+
 from enemies.fat_bird import FatBird
+from enemies.bluebird import BlueBird
 
 class Level1():
     
@@ -63,6 +67,8 @@ class Level1():
         ### SUPERIORS
         [Strawberry(i*50, HEIGHT - 5*block_size, 32, 32) for i in range (1,11)]
         [Apple(i*(-100), HEIGHT - 2*block_size, 32, 32) for i in range (1,3)]
+        [Cherry(i*(100), HEIGHT - 2*block_size, 32, 32) for i in range (1,8)]
+        [Pineapple(i*(100), HEIGHT - 3*block_size, 32, 32) for i in range (1,8)]
         
 
         ### KONCOWE DODANIE ELEMENTOW DO LIST
@@ -70,7 +76,7 @@ class Level1():
         self.objects_notcoll = [self.start_platform, *self.chains]
         
         self.superiors = Apple.all_apples
-        self.superiors.add(Strawberry.all_strawberries)
+        self.superiors.add(Strawberry.all_strawberries, Cherry.all_cherries, Pineapple.all_pineapples)
         
 
         self.spikehead = SpikeHead(block_size * 8, HEIGHT + block_size - 14, 54, 52, self.blocks)
@@ -79,14 +85,17 @@ class Level1():
         #self.interact_elements.add(FallingPlatform.all_falling_platforms, self.spikehead)
 
         FatBird(-100, HEIGHT - 2*block_size + 16, 40, 48, self.objects, 400)
+        BlueBird(- 200, HEIGHT - 4*block_size, 32, 32, 120)
         self.enemies = FatBird.all_fatbirds
+        self.enemies.add(BlueBird.all_bluebirds)
     
     def clear_map(self):
         self.objects = []
         self.objects_notcoll = []
-        self.enemies = []
         # INNE CZYSZCZENIE NIE DZIALA (NIE WIEM CZEMU NA OBECNA CHWILE)
         for sup in self.superiors:
             sup.kill()
         for elem in self.interact_elements:
             elem.kill()
+        for enemy in self.enemies:
+            enemy.kill()
