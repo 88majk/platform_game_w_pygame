@@ -54,7 +54,6 @@ def get_background(name):
 
 def update_background(tiles, speed):
     updated_tiles = []
-
     for x,y in tiles:
         if y > HEIGHT - 10:
             y = -64

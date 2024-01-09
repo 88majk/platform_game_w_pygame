@@ -10,7 +10,7 @@ from levels.level2 import *
 from picture import Picture
 from pygame.locals import *
 
-FPS = 60
+FPS = 50
 PLAYER_VEL = 5
 level_win = [False]
 
@@ -49,11 +49,16 @@ def handle_move(player, objects, interact_elements, superiors, enemies): # FUNKC
         if obj and obj.name == "blue_bird":
             obj.active = False
             obj.jumpedOn = True
+        if obj and obj.name == "bunny":
+            obj.active = False
+            obj.jumpedOn = True
     
     for obj in enemies_hitlist:
         if obj and obj.name == "fat_bird" and obj.active:
             player.make_hit()
         if obj and obj.name == "blue_bird" and obj.active:
+            player.make_hit()
+        if obj and obj.name == "bunny" and obj.active:
             player.make_hit()
 
     for obj in to_check + bot_vertical_collide:
@@ -74,7 +79,7 @@ def handle_move(player, objects, interact_elements, superiors, enemies): # FUNKC
             obj.jumpedOn = True
 
         if obj and obj.name == "strawberry" and not obj.collected:
-            player.collect_points()
+            player.collect_points(10)
             if obj in superiors:
                 obj.collected = True
         if obj and obj.name == "apple" and not obj.collected:
@@ -82,7 +87,7 @@ def handle_move(player, objects, interact_elements, superiors, enemies): # FUNKC
             if obj in superiors:
                 obj.collected = True
         if obj and obj.name == "cherry" and not obj.collected:
-            player.collect_points()
+            player.collect_points(10)
             if obj in superiors:
                 obj.collected = True
         if obj and obj.name == "pineapple" and not obj.collected:
@@ -113,12 +118,14 @@ def main(window):
     # LISTY POTRZEBNE DO RYSOWANIA ZESTAWOW PRZYCISKOW W ZALEZNOSCI OD STANU
     menu_buttons = [levels_button, settings_button, exit_button]
     settings_buttons = [ninjafrog_button, virtualguy_button, pinkman_button, backFromSettings_button]
+    rect_position = (130, 330)
+    rect_size = (90, 90)
     levels_buttons = [level01_button, level02_button, level03_button, backFromLvls_button]
     pause_buttons = [restart_button, exit_from_game_button]
     win_buttons = [levels_endlvl_button, restart_endlvl_button]
 
     # LISTA DO RYSOWANIA TLA MENU GLOWNEGO
-    menu_floor = [Block(i*block_size, HEIGHT - block_size, block_size, 96, 0) for i in range(-WIDTH // block_size, WIDTH * 2//block_size)]
+    menu_floor = [Block(i*block_size, HEIGHT - block_size, block_size, block_size, 96, 0) for i in range(-WIDTH // block_size, WIDTH * 2//block_size)]
 
     pygame.mouse.set_cursor(pygame.cursors.diamond) 
 
@@ -152,12 +159,13 @@ def main(window):
 
             
             draw_menu(window, background, bg_image, menu_floor, 0, 0)
-            
             draw_buttons(window, menu_buttons)
             draw_text(window, "PJF Adventures", title_font, TITLE_COL, 70, 50)
             draw_text(window, "Levels", font, TEXT_COL, 230, 255)
             draw_text(window, "Settings", font, TEXT_COL, 230, 315)
             draw_text(window, "Exit", font, TEXT_COL, 230, 370)
+            instruction = Picture(instruction_pic, 2)
+            instruction.draw(window, 590, 150)
 
         while levels_choice:
             clock.tick(FPS)
@@ -202,21 +210,26 @@ def main(window):
                     if event.key == pygame.K_ESCAPE:
                         settings_state = False
                         menu_state = True
-            
+
             if mark_button(ninjafrog_button):
                 picked_hero = "NinjaFrog"
+                rect_position = (130, 330)
             if mark_button(virtualguy_button):
                 picked_hero = "VirtualGuy"
+                rect_position = (210, 330)
             if mark_button(pinkman_button):
                 picked_hero = "PinkMan"
+                rect_position = (290, 330)
             if mark_button(backFromSettings_button):
                 settings_state = False
                 menu_state = True
-
+            
             draw_menu(window, background, bg_image, menu_floor, 0, 0)
             draw_buttons(window, settings_buttons)
             draw_text(window, "PJF Adventures", title_font, TITLE_COL, 70, 50)
-            draw_text(window, f"Picked hero: {picked_hero}", smaller_font, (255,255,255), 130, 390)
+            draw_text(window, f"Pick your hero", font, (255,255,255), 120, 270)
+            draw_text(window, "Back to menu", smaller_font, (255,255,255), 155, 475)
+            pygame.draw.rect(window, (55, 163, 23), (*rect_position, *rect_size), 2)
             
 
         while play_state:
@@ -227,7 +240,7 @@ def main(window):
                 offset_x = 0
                 offset_y = 0
                 level.reset_level()
-                player = Player(80, 100, 50, 50, picked_hero)
+                player = Player(100, 100, 50, 50, picked_hero)
                 player.score = 0
                 player.life_points = 3
                 level_reset = False

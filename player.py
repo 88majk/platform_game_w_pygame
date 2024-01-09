@@ -4,7 +4,7 @@ import time
 
 class Player(pygame.sprite.Sprite):
     COLOR = (255, 0, 0)
-    GRAVITY = 3
+    GRAVITY = 4
     
     ANIMATION_DELAY = 3
 
@@ -26,8 +26,8 @@ class Player(pygame.sprite.Sprite):
         self.bug_protect = True
         self.wall_jump = False
         ### timery
-        self.gravity_multiplier = 1  # Mnożnik grawitacji, domyślnie 1
-        self.gravity_reduction_start_time = 0  # Czas rozpoczęcia redukcji grawitacji
+        self.gravity_multiplier = 1
+        self.gravity_reduction_start_time = 0  
         self.gravity_reduction_duration = 10
     
     def move(self, dx, dy):
@@ -70,20 +70,19 @@ class Player(pygame.sprite.Sprite):
 
         ### timery
         if self.gravity_multiplier < 1 and time.time() - self.gravity_reduction_start_time > self.gravity_reduction_duration:
-            # Jeśli mnożnik grawitacji jest mniejszy niż 1 i minął określony czas redukcji
-            self.gravity_multiplier = 1  # Przywróć normalny mnożnik grawitacji
+            self.gravity_multiplier = 1  
 
         self.y_vel += min(1, (self.fall_count / fps) * self.GRAVITY / self.gravity_multiplier)
 
 
     def make_hit(self):
         if self.bug_protect:
-            self.hit = True
+            # self.hit = True
             self.hit_count = 0
             self.bug_protect = False
     
-    def collect_points(self):
-        self.score += 10
+    def collect_points(self, points):
+        self.score += points
     
     def collect_apple(self):
         if self.life_points < 3:
@@ -94,10 +93,9 @@ class Player(pygame.sprite.Sprite):
         self.fall_count = 0
         self.y_vel = 0
         self.jump_count = 0
-        print("land")
     
     def slide(self, dy=0):
-        if self.y_vel > 0.5 or self.y_vel < -0.5:
+        if self.y_vel > 0.9 or self.y_vel < -0.9:
             self.wall_jump = True
             self.y_vel = dy/3
             self.jump_count = 0

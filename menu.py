@@ -1,6 +1,7 @@
 import pygame
 from button import Button
 from object import Object
+from graphic_setup import load_sprite_sheets
 
 
 font = pygame.font.SysFont("Retro Gaming", 30)
@@ -27,6 +28,7 @@ settings_button = Button(180, 310, settings_img, 2)
 exit_img = pygame.image.load("assets/Menu/Buttons/close.png").convert_alpha()
 exit_button = Button(180, 370, exit_img, 2.6)
 
+instruction_pic = pygame.image.load("assets/Other/instruction.png")
 
 
 #### PRZYCISKI MENU WYBORU LEVELU
@@ -42,16 +44,16 @@ backFromLvls_button = Button(120, 420, back_img, 2)
 
 
 #### PRZYCISKI MENU USTAWIEN
-ninjafrog_img = pygame.image.load("assets/MainCharacters/NinjaFrog/fall.png")
-ninjafrog_button = Button(130, 330, ninjafrog_img, 2)
+ninjafrog_img = pygame.image.load("assets/Other/ninjafrog.png")
+ninjafrog_button = Button(130, 330, ninjafrog_img, 2.5)
 
-virtualguy_img = pygame.image.load("assets/MainCharacters/VirtualGuy/fall.png")
-virtualguy_button = Button(180, 330, virtualguy_img, 2)
+virtualguy_img = pygame.image.load("assets/Other/virtualguy.png")
+virtualguy_button = Button(210, 330, virtualguy_img, 2.5)
 
-pinkman_img = pygame.image.load("assets/MainCharacters/PinkMan/fall.png")
-pinkman_button = Button(230, 330, pinkman_img, 2)
+pinkman_img = pygame.image.load("assets/Other/pinkman.png")
+pinkman_button = Button(290, 330, pinkman_img, 2.5)
 
-backFromSettings_button = Button(120, 420, back_img, 2)
+backFromSettings_button = Button(120, 470, back_img, 2)
 
 
 #### PRZYCISKI MENU PAUZY GRY

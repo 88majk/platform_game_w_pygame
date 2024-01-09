@@ -1,9 +1,5 @@
-wybor bohatera (dodać animacje)
-dodać instrukcję do menu glownego
-    - klawisze i co robią
-    - szybki opis owocow
-dodanie przeciwnikow
-dodanie nowych owocow z innymi funkcjami
+zrobic zeby krolik gonil za graczem
+dodac banany na sam koniec
 koncowa liczba gwiazdek za poziom w zaleznosci od pkt
 
 projektowanie leveli
