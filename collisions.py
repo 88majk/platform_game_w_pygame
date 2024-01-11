@@ -41,6 +41,7 @@ def top_handle_vertical_collsion(player, objects, interact_elements, enemies, dy
             if dy < 0:
                 player.rect.top = obj.rect.bottom
                 player.hit_head()
+                
             collided_objects.append(obj)
     return collided_objects
 

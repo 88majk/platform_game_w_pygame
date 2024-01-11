@@ -7,7 +7,7 @@ class Bunny(Object):
     GRAVITY = 1
     all_bunnies = pygame.sprite.Group()
 
-    def __init__(self, x, y, width, height, run_lenght):
+    def __init__(self, x, y, width, height, run_lenght, direction):
         super().__init__(x, y, width, height, "bunny")
         self.bunny = load_sprite_sheets("Enemies", "Bunny", width, height)
         self.image = self.bunny["Run (34x44)"][0]
@@ -15,7 +15,7 @@ class Bunny(Object):
         self.animation_name = "Run (34x44)"
         self.animation_count = 0
         self.hit_animation_count = 0
-        self.direction = -1
+        self.direction = direction
         self.x_vel = 2
         self.org_x = x
         self.killed = False

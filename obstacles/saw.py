@@ -6,7 +6,7 @@ class Saw(Object):
     ANIMATION_DELAY = 3
     all_saws = pygame.sprite.Group()
 
-    def __init__(self, x, y, width, height, trip_x, trip_y):
+    def __init__(self, x, y, width, height, trip_x, trip_y, vel):
         super().__init__(x, y, width, height, "saw")
         self.saw = load_sprite_sheets("Traps", "Saw", width, height)
         self.image = self.saw["on"][0]
@@ -19,7 +19,7 @@ class Saw(Object):
         self.trip_y = trip_y
         self.direction_x = 1  
         self.direction_y = 0  
-        self.saw_vel = 6
+        self.saw_vel = vel
         Saw.all_saws.add(self)
     
     def loop(self):

@@ -16,7 +16,7 @@ class BlueBird(Object):
         self.animation_count = 0
         self.hit_animation_count = 0
         self.direction = -1
-        self.x_vel = 1
+        self.x_vel = 3
         self.org_x = x
         self.killed = False
         self.jumpedOn = False

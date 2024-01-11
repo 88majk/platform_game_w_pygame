@@ -11,12 +11,16 @@ from picture import Picture
 from pygame.locals import *
 
 FPS = 50
-PLAYER_VEL = 5
+PLAYER_VEL = 6
 level_win = [False]
 
 def handle_move(player, objects, interact_elements, superiors, enemies): # FUNKCJA STEROWANIA
     keys = pygame.key.get_pressed()
     player.x_vel = 0
+    
+    bot_vertical_collide = bot_handle_vertical_collsion(player, objects, interact_elements, enemies, 2*player.y_vel)
+    top_vertical_collide = top_handle_vertical_collsion(player, objects, interact_elements, enemies, 2*player.y_vel)
+    
     collide_left = collide(player, objects, interact_elements, enemies, -PLAYER_VEL * 2)
     collide_right = collide(player, objects, interact_elements, enemies, PLAYER_VEL * 2)
 
@@ -34,8 +38,6 @@ def handle_move(player, objects, interact_elements, superiors, enemies): # FUNKC
         else:
             player.slide(player.y_vel)
 
-    top_vertical_collide = top_handle_vertical_collsion(player, objects, interact_elements, enemies, player.y_vel)
-    bot_vertical_collide = bot_handle_vertical_collsion(player, objects, interact_elements, enemies, player.y_vel)
     superiors_collected = collect_superiors(player, superiors)
     
     # SPRAWDZANIE I OBSLUGA KOLIZJI POSTACI
@@ -90,6 +92,10 @@ def handle_move(player, objects, interact_elements, superiors, enemies): # FUNKC
             player.collect_points(10)
             if obj in superiors:
                 obj.collected = True
+        if obj and obj.name == "banana" and not obj.collected:
+            player.collect_points(10)
+            if obj in superiors:
+                obj.collected = True
         if obj and obj.name == "pineapple" and not obj.collected:
             player.start_gravity_reduction()
             if obj in superiors:
@@ -97,8 +103,7 @@ def handle_move(player, objects, interact_elements, superiors, enemies): # FUNKC
 
         if obj and obj.name == "final_flag":
             obj.collected = True
-            if obj.lvl_end:
-                player.win()
+            
      
 
 
@@ -179,11 +184,13 @@ def main(window):
                         pass
             
             if mark_button(level01_button):
+                SCORE_COL = (18, 130, 28)
                 level = Level1()
                 level_reset = True
                 play_state = True
                 levels_choice = False
             if mark_button(level02_button):
+                SCORE_COL = (204, 33, 161)
                 level = Level2()
                 level_reset = True
                 play_state = True
@@ -236,6 +243,7 @@ def main(window):
             clock.tick(FPS)
             pygame.display.update()
             background = update_background(background, 1)
+
             if level_reset:
                 offset_x = 0
                 offset_y = 0
@@ -287,7 +295,7 @@ def main(window):
                 draw_text(window, "Paused", font, (66, 45, 32), 570, 200)
                 draw_text(window, "Restart level", smaller_font,  (66, 45, 32), 580, 250)
                 draw_text(window, "Exit to menu", smaller_font,  (66, 45, 32), 580, 280)
-                draw_buttons(window, pause_buttons) # 400, 250
+                draw_buttons(window, pause_buttons)
             ######################################################################
             
             # WARUNEK SKONCZENIA POZIOMU (ZEBRANIA FLAGI FINAL) ORAZ WYSWIETLENIE MENU
@@ -317,7 +325,8 @@ def main(window):
                 frame_win = Picture(frame_img, 1)
                 frame_win.draw(window, 415, 140)
                 ### tutaj dodac gwiazdki za poziom
-                draw_text(window, "You won!", font, (66, 45, 32), 570, 200)
+                draw_text(window, "You won!", font, (66, 45, 32), 570, 180)
+                draw_text(window, f"Your score: {player.score}", smaller_font, (66, 45, 32), 557, 218)
                 draw_text(window, "Switch level", smaller_font,  (66, 45, 32), 580, 250)
                 draw_text(window, "Restart level", smaller_font,  (66, 45, 32), 580, 280)
                 draw_buttons(window, win_buttons)
@@ -325,7 +334,7 @@ def main(window):
                 
             
             # WARUNEK UTRATY WSZYSTKICH ZYC (GAME OVER)
-            while player.life_points == 0:
+            while player.life_points == 0 or player.rect.y > 3000:
                 clock.tick(FPS)
                 pygame.display.update()
                 background = update_background(background, 1)
@@ -363,6 +372,7 @@ def main(window):
                 if obj and obj.name == "final_flag": ##sprawdz warunek zebrania flagi (tutaj, zeby było płynne zakończenie poziomu)
                     if obj.lvl_end:
                         level_win[0] = True
+                        player.win()
             for sup in level.superiors:
                 sup.loop()
             for platform in level.interact_elements: 

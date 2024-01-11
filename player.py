@@ -77,7 +77,7 @@ class Player(pygame.sprite.Sprite):
 
     def make_hit(self):
         if self.bug_protect:
-            # self.hit = True
+            self.hit = True
             self.hit_count = 0
             self.bug_protect = False
     
@@ -85,7 +85,7 @@ class Player(pygame.sprite.Sprite):
         self.score += points
     
     def collect_apple(self):
-        if self.life_points < 3:
+        if self.life_points < 4:
             self.life_points += 1
 
     def landed(self):

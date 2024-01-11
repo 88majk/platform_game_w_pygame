@@ -12,7 +12,7 @@ TEXT_COL = (255, 255, 255)
 TITLE_COL = (16, 112, 37)
 
 font_score = pygame.font.SysFont("04b 30", 45)
-SCORE_COL = (158, 13, 20)
+SCORE_COL = (61, 263, 20)
 
 play_img = pygame.image.load("assets/Menu/Buttons/play.png").convert_alpha()
 back_img = pygame.image.load("assets/Menu/Buttons/Back.png").convert_alpha()

@@ -30,7 +30,6 @@ class SpikeHead(Object):
     def loop(self):
         sprites = self.spikeHead[self.animation_name]
         sprite_index = (self.animation_count // self.ANIMATION_DELAY) % len(sprites)
-        
 
         self.rect.x += self.direction * self.current_speed
 

@@ -29,7 +29,7 @@ class Level1():
     def reset_level(self):
         block_size = 96
         self.level1 = [Block(i*block_size, HEIGHT - block_size, block_size, block_size,96, 0) for i in range(0, 12)] # WIDTH * 2//block_size
-        self.level2 = [Block(i*block_size, HEIGHT + 2*block_size, block_size, block_size,96, 0) for i in range(-7, 19)]
+        self.level2 = [Block(i*block_size, HEIGHT + 2*block_size, block_size, block_size,96, 0) for i in range(-7, 18)]
         self.level3 = [Block(i*block_size, HEIGHT, block_size, block_size,96, 0) for i in range(-13, -7)]
         self.floor = [*self.level1, *self.level2, *self.level3]
 
@@ -49,9 +49,9 @@ class Level1():
         self.fire = [Fire(block_size * 13, HEIGHT - block_size * 3 - 64, 16, 32), Fire(-block_size, HEIGHT - block_size * 4 - 64, 16, 32), Fire(-block_size*4, HEIGHT - block_size * 7 - 64, 16, 32)]
 
         self.saws = [Saw(block_size * 5 - 38, HEIGHT - block_size * 6 - 38, 38, 38, 
-                         4*block_size, block_size)] # trasa prostokata
+                         4*block_size, block_size, 6)] # trasa prostokata
 
-        self.wall1 = [Block(block_size * 19, HEIGHT - i*block_size, block_size, block_size,96, 0) for i in range(-2, 8)] ## NA TYM MAJA BYC OWOCKI
+        self.wall1 = [Block(block_size * 18, HEIGHT - i*block_size, block_size, block_size,96, 0) for i in range(-2, 8)] ## NA TYM MAJA BYC OWOCKI
         self.wall2 = [Block(-block_size * 7, HEIGHT - i*block_size, block_size, block_size,96, 0) for i in range(-2, 8)]
         self.wall3 = [Block(0, HEIGHT - block_size * i, block_size, block_size, 96, 0) for i in range(2, 10)]
         self.wall4 = [Block(-block_size*13, HEIGHT - i*block_size, block_size, block_size, 96, 0) for i in range(0, 9)]
@@ -113,19 +113,23 @@ class Level1():
 
 
         ### KONCOWE DODANIE ELEMENTOW DO LIST
-        self.objects = [*self.floor, *self.saws, *self.blocks, *self.fire, *self.spiked_ball, *self.spikes, self.final_flag]
+        self.objects = [*self.floor, *self.blocks, *self.fire, *self.spiked_ball, *self.spikes, self.final_flag]
         self.objects_notcoll = [self.arrowsign, *self.chains]
 
 
 
         ### SUPERIORS
-        [Strawberry(i*50, HEIGHT - 5*block_size, 32, 32) for i in range (1,11)]
-        [Apple(i*(-100), HEIGHT - 2*block_size, 32, 32) for i in range (1,3)]
-        [Cherry(i*(100), HEIGHT - 2*block_size, 32, 32) for i in range (1,8)]
-        [Pineapple(i*(100), HEIGHT - 3*block_size, 32, 32) for i in range (1,8)]
+        [Strawberry(5*block_size - 40 + i*40, HEIGHT - 7*block_size, 32, 32) for i in range (1,10)]
+        [Strawberry(5*block_size - 20 + i*40, HEIGHT - 7*block_size - 50, 32, 32) for i in range (1,10)]
+        [Strawberry(60+ i * 50, HEIGHT + block_size, 32, 32) for i in range (1,21)]
+        Apple(-318 - 22, 720 - 65, 32, 32)
+        [Cherry(block_size * 17 , HEIGHT - i*50, 32, 32) for i in range (1,8)]
+        [Cherry(block_size * 16 + 50, HEIGHT - i*50, 32, 32) for i in range (1,8)]
+        [Cherry(-block_size*12 + 20, HEIGHT - i*50, 32, 32) for i in range (2,14)]
+        Pineapple(-5*block_size - 80, HEIGHT - 10 - block_size*2 - 60, 32, 32)
         
         self.superiors = Apple.all_apples
-        self.superiors.add(Strawberry.all_strawberries, Cherry.all_cherries)
+        self.superiors.add(Strawberry.all_strawberries, Cherry.all_cherries, Pineapple.all_pineapples)
 
         
         ### INTERACT ELEMENTS
@@ -138,11 +142,11 @@ class Level1():
 
 
         ### ENEMIES
-        # FatBird(-100, HEIGHT - 2*block_size + 16, 40, 48, self.objects, 400)
-        # BlueBird(- 200, HEIGHT - 4*block_size, 32, 32, 120)
-        # Bunny(300, HEIGHT - 2*block_size + 12, 34, 44, 120)
+        FatBird(block_size * 16 + 60, HEIGHT + 16, 40, 48, self.floor, 400)
+        FatBird(-block_size - 82, HEIGHT - block_size * 4 - 64, 40, 48, self.objects, 250)
+        
         self.enemies = pygame.sprite.Group()
-        #self.enemies.add(BlueBird.all_bluebirds, Bunny.all_bunnies)
+        self.enemies.add(FatBird.all_fatbirds)
     
     def clear_map(self):
         self.objects = []
